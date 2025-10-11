@@ -1,0 +1,45 @@
+# Django Core
+Django==5.0.1
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# Authentication
+djangorestframework-simplejwt==5.3.1
+
+# Database
+psycopg2-binary==2.9.9
+dj-database-url==2.1.0
+
+# Environment
+python-decouple==3.8
+
+# Image Processing
+Pillow==10.1.0
+
+# Machine Learning (for future ML features)
+tensorflow==2.19.1
+numpy==1.26.2
+
+# Testing
+pytest==7.4.3
+pytest-django==4.7.0
+pytest-cov==4.1.0
+factory-boy==3.3.0
+
+# Code Quality
+black==23.12.0
+isort==5.13.2
+pylint==3.0.3
+flake8==6.1.0
+
+# Security
+bandit==1.7.5
+# safety==2.3.5  # Temporarily disabled due to dependency conflicts
+
+# API Documentation
+drf-spectacular==0.27.0
+
+# Utilities
+python-dotenv==1.0.0
+gunicorn==21.2.0
+whitenoise==6.6.0
