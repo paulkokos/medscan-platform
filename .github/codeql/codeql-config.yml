@@ -1,0 +1,16 @@
+name: "CodeQL Config"
+
+paths-ignore:
+  - '**/node_modules/**'
+  - '**/venv/**'
+  - '**/build/**'
+  - '**/dist/**'
+  - '**/*.min.js'
+  - '**/migrations/**'
+  - '**/tests/**'
+  - '**/__pycache__/**'
+
+queries:
+  - uses: security-and-quality
+
+disable-default-queries: false
