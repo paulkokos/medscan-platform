@@ -22,13 +22,13 @@ We take the security of MedScan Platform seriously. If you believe you have foun
 Instead, please report them via one of the following methods:
 
 1. **GitHub Security Advisories** (Preferred)
-   - Go to the [Security tab](https://github.com/YOUR_USERNAME/medscan-platform/security/advisories)
+   - Go to the [Security tab](https://github.com/paulkokos/medscan-platform/security/advisories)
    - Click "Report a vulnerability"
    - Fill out the form with details
 
-2. **Email**
-   - Send an email to: security@yourproject.com
-   - Include "SECURITY" in the subject line
+2. **GitHub Issues** (For non-critical issues)
+   - Create a private security advisory issue
+   - Tag with "security" label
 
 ### What to Include
 
@@ -280,12 +280,12 @@ This project aims to comply with:
 ## Contact
 
 For security-related questions:
-- Email: security@yourproject.com
-- Security Advisory: GitHub Security Tab
+- Security Advisory: [GitHub Security Tab](https://github.com/paulkokos/medscan-platform/security)
+- Private Reports: Use GitHub Security Advisories
 
 For general questions:
 - GitHub Issues: For non-security issues only
-- Discussions: For general questions
+- Discussions: For general questions and support
 
 ---
 
