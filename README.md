@@ -4,9 +4,9 @@
 
 <br>
 
-[![Frontend CI](https://github.com/paulkokos/medscan-platform/workflows/Frontend%20CI/badge.svg)](https://github.com/paulkokos/medscan-platform/actions)
-[![Backend CI](https://github.com/paulkokos/medscan-platform/workflows/Backend%20CI/badge.svg)](https://github.com/paulkokos/medscan-platform/actions)
-[![codecov](https://codecov.io/gh/paulkokos/medscan-platform/branch/main/graph/badge.svg)](https://codecov.io/gh/paulkokos/medscan-platform)
+[![Frontend CI](https://github.com/paulkokos/medscan-platform/workflows/Frontend%20CI/badge.svg?branch=master)](https://github.com/paulkokos/medscan-platform/actions)
+[![Backend CI](https://github.com/paulkokos/medscan-platform/workflows/Backend%20CI/badge.svg?branch=master)](https://github.com/paulkokos/medscan-platform/actions)
+[![codecov](https://codecov.io/gh/paulkokos/medscan-platform/branch/master/graph/badge.svg)](https://codecov.io/gh/paulkokos/medscan-platform)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
