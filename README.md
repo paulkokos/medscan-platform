@@ -6,11 +6,15 @@
 
 [![Frontend CI](https://github.com/paulkokos/medscan-platform/workflows/Frontend%20CI/badge.svg?branch=master)](https://github.com/paulkokos/medscan-platform/actions)
 [![Backend CI](https://github.com/paulkokos/medscan-platform/workflows/Backend%20CI/badge.svg?branch=master)](https://github.com/paulkokos/medscan-platform/actions)
-[![codecov](https://codecov.io/gh/paulkokos/medscan-platform/branch/master/graph/badge.svg)](https://codecov.io/gh/paulkokos/medscan-platform)
+[![codecov](https://codecov.io/gh/paulkokos/medscan-platform/branch/master/graph/badge.svg)](https://github.com/paulkokos/medscan-platform/actions)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+[![Discussions](https://img.shields.io/github/discussions/paulkokos/medscan-platform)](https://github.com/paulkokos/medscan-platform/discussions)
+[![Project Board](https://img.shields.io/badge/project-board-blue)](https://github.com/users/paulkokos/projects)
+[![Issues](https://img.shields.io/github/issues/paulkokos/medscan-platform)](https://github.com/paulkokos/medscan-platform/issues)
 
 <br>
 <br>
@@ -360,6 +364,21 @@ For security vulnerabilities, please see [SECURITY.md](SECURITY.md).
 ---
 
 ## Contributing
+
+### [Join the Discussion](https://github.com/paulkokos/medscan-platform/discussions)
+- Ask questions and get help from the community
+- Share ideas for new features and improvements
+- Showcase your implementations and use cases
+- Discuss medical imaging research and techniques
+- Collaborate on development and best practices
+
+### [Project Board](https://github.com/users/paulkokos/projects)
+- View current development priorities and roadmap
+- See what features are planned and in progress
+- Contribute to ongoing tasks and initiatives
+- Track bug fixes and feature requests
+
+### How to Contribute
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 

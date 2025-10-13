@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Question or Discussion
-    url: https://github.com/YOUR_USERNAME/medscan-platform/discussions
+    url: https://github.com/paulkokos/medscan-platform/discussions
     about: Ask questions or discuss ideas with the community
   - name: Documentation
-    url: https://github.com/YOUR_USERNAME/medscan-platform/wiki
+    url: https://github.com/paulkokos/medscan-platform/wiki
     about: Check our documentation and guides
   - name: Security Issue
-    url: https://github.com/YOUR_USERNAME/medscan-platform/security/advisories/new
+    url: https://github.com/paulkokos/medscan-platform/security/advisories/new
     about: Report a security vulnerability (private disclosure)
