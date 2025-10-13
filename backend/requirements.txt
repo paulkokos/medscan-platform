@@ -18,7 +18,7 @@ Pillow==10.1.0
 
 # Machine Learning (for future ML features)
 tensorflow==2.19.1
-numpy==1.26.2
+numpy==2.3.3
 
 # Testing
 pytest==7.4.3
