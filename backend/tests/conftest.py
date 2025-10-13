@@ -130,3 +130,10 @@ def medical_image(create_medical_image, sample_image):
 def enable_db_access_for_all_tests(db):
     """Enable database access for all tests"""
     pass
+
+
+@pytest.fixture(autouse=True)
+def disable_ssl_redirect(settings):
+    """Disable SSL redirect for tests to prevent 301 redirects"""
+    settings.SECURE_SSL_REDIRECT = False
+    settings.SECURE_PROXY_SSL_HEADER = None
