@@ -29,4 +29,36 @@ Django REST API for MedScan medical image analysis platform.
 ### Installation
 <br>
 
+```bash
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Setup database
+createdb medscan
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Run migrations
+python manage.py migrate
+
+# Create superuser
+python manage.py createsuperuser
+
+# Run development server
+python manage.py runserver
+```
+
+<br>
+
+The API will be available at [http://localhost:8000](http://localhost:8000)
+
+<br>
+
+## API Endpoints
+
+<br>
 
