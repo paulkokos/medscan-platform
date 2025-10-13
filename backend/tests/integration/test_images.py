@@ -2,9 +2,9 @@
 Integration tests for images API endpoints
 """
 import pytest
+from apps.images.models import MedicalImage
 from django.urls import reverse
 from rest_framework import status
-from apps.images.models import MedicalImage
 
 
 @pytest.mark.images

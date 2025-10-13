@@ -1,13 +1,14 @@
 """
 Pytest configuration and fixtures
 """
+import io
+
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from PIL import Image
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
-from PIL import Image
-import io
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
 

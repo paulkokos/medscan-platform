@@ -3,10 +3,11 @@ Django settings for medscan project.
 """
 
 import os
-from pathlib import Path
 from datetime import timedelta
-from decouple import config
+from pathlib import Path
+
 import dj_database_url
+from decouple import config
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent

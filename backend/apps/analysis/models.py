@@ -1,8 +1,8 @@
 """
 Analysis models
 """
-from django.db import models
 from apps.images.models import MedicalImage
+from django.db import models
 
 
 class Analysis(models.Model):

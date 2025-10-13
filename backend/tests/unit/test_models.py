@@ -2,10 +2,10 @@
 Unit tests for database models
 """
 import pytest
+from apps.analysis.models import Analysis
+from apps.images.models import MedicalImage
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from apps.images.models import MedicalImage
-from apps.analysis.models import Analysis
 
 User = get_user_model()
 
