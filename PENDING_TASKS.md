@@ -4,6 +4,43 @@ Report updated: 2025-01-21
 
 ---
 
+## EXTREME RISKS (Critical)
+
+- PHI exposure via S3 (settings.py USE_S3): AWS_DEFAULT_ACL=public-read and public MEDIA_URL. Action: make bucket private, remove public-read, use presigned URLs, enable SSE (KMS), least-privilege IAM.
+  Owner: Security/DevOps (@paulkokos)
+  Deadline: 2025-10-16
+- Missing core pipeline: Analysis views/serializers + ML inference absent → no E2E flow. Action: implement minimal Analysis API and inference service before any release.
+  Owner: Backend/ML (@paulkokos)
+  Deadline: 2025-10-20
+- docker-compose: Postgres exposed (5432:5432) with weak creds medscan/medscan. Action: remove port mapping in prod, use secrets manager, strong passwords, network isolation.
+  Owner: DevOps (@paulkokos)
+  Deadline: 2025-10-16
+- README references docker-compose.prod.yml which is missing. Action: add prod compose (no bind mounts, no dev flags) or fix docs.
+  Owner: DevOps/Docs (@paulkokos)
+  Deadline: 2025-10-17
+- Insecure defaults: SECRET_KEY/JWT fallbacks and DEBUG toggles. Action: enforce non-default env vars at startup; fail fast if missing.
+  Owner: Backend (@paulkokos)
+  Deadline: 2025-10-16
+- Logging PII risk: logs/django.log may capture sensitive data. Action: scrub sensitive fields, lower log level, rotate/secure logs, avoid request bodies in prod.
+  Owner: Backend (@paulkokos)
+  Deadline: 2025-10-18
+- Backend Dockerfile healthcheck uses python -c import requests and /admin. Action: use curl/wget to a lightweight /health endpoint; ensure dependency exists.
+  Owner: DevOps (@paulkokos)
+  Deadline: 2025-10-17
+- HTTPS/CORS hardening: enforce HTTPS end-to-end, strict CORS allowlist, secure cookies, verify HSTS behind reverse proxy.
+  Owner: Backend/DevOps (@paulkokos)
+  Deadline: 2025-10-19
+- Compliance/data retention: do not store raw medical images without BAA/DPA; document anonymization policy and retention/erasure.
+  Owner: Security/Compliance (@paulkokos)
+  Deadline: 2025-10-23
+- Repo hygiene: backend/.env and db.sqlite3 exist locally; ensure not committed; confirm .gitignore, rotate any leaked secrets.
+  Owner: Maintainers/DevOps (@paulkokos)
+  Deadline: 2025-10-14
+- Auth hardening missing: rate limiting/brute-force protection and optional 2FA. Action: enable DRF throttling/django-ratelimit; plan 2FA.
+  Owner: Backend/Security (@paulkokos)
+  Deadline: 2025-10-20
+
+
 ## [PROJECT STATUS] **85% Complete** - Production Ready Architecture
 
 ### **COMPLETED FEATURES**
