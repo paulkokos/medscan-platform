@@ -62,3 +62,67 @@ The API will be available at [http://localhost:8000](http://localhost:8000)
 
 <br>
 
+### Authentication
+
+| Method | Endpoint              | Description              |
+| ------ | --------------------- | ------------------------ |
+| POST   | `/api/auth/register/` | Register new user        |
+| POST   | `/api/auth/login/`    | Login and get JWT token  |
+| GET    | `/api/auth/user/`     | Get current user profile |
+| PATCH  | `/api/auth/user/`     | Update user profile      |
+
+<br>
+
+### Images
+
+| Method | Endpoint            | Description            |
+| ------ | ------------------- | ---------------------- |
+| GET    | `/api/images/`      | List all user's images |
+| POST   | `/api/images/`      | Upload new image       |
+| GET    | `/api/images/{id}/` | Get image details      |
+| DELETE | `/api/images/{id}/` | Delete image           |
+
+<br>
+
+### Analysis
+
+| Method | Endpoint              | Description          |
+| ------ | --------------------- | -------------------- |
+| POST   | `/api/analysis/`      | Start image analysis |
+| GET    | `/api/analysis/{id}/` | Get analysis results |
+
+<br>
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov
+
+# Run specific test file
+pytest apps/authentication/tests/test_views.py
+```
+
+<br>
+
+<br>
+
+## Code Quality
+
+```bash
+# Format code
+black .
+isort .
+
+# Lint code
+flake8 .
+pylint **/*.py
+```
+
+<br>
+
+<br>
+
