@@ -10,13 +10,13 @@ Complete guide for deploying MedScan Platform to AWS.
 
 <br>
 
-| Component | AWS Service | Purpose |
-|-----------|-------------|---------|
-| Backend API | Elastic Beanstalk | Django application hosting |
-| Frontend | S3 + CloudFront | Static website hosting & CDN |
-| Database | RDS PostgreSQL | Managed database service |
-| Media Storage | S3 | User-uploaded images |
-| Domain & SSL | Route 53 + ACM | DNS and SSL certificates |
+| Component     | AWS Service       | Purpose                      |
+| ------------- | ----------------- | ---------------------------- |
+| Backend API   | Elastic Beanstalk | Django application hosting   |
+| Frontend      | S3 + CloudFront   | Static website hosting & CDN |
+| Database      | RDS PostgreSQL    | Managed database service     |
+| Media Storage | S3                | User-uploaded images         |
+| Domain & SSL  | Route 53 + ACM    | DNS and SSL certificates     |
 
 <br>
 
@@ -58,12 +58,14 @@ aws configure
 ```
 
 You will need:
+
 - AWS Access Key ID
 - AWS Secret Access Key
 - Default region: `us-east-1`
 - Default output format: `json`
 
 To get credentials:
+
 1. Go to AWS Console
 2. IAM > Users > Your User > Security Credentials
 3. Create Access Key
@@ -423,14 +425,14 @@ eb setenv AWS_S3_REGION_NAME=us-east-1
 
 ### Free Tier (First 12 Months)
 
-| Service | Free Tier | After Free Tier |
-|---------|-----------|-----------------|
-| EC2 t2.micro | 750 hours/month | $8.50/month |
-| RDS db.t2.micro | 750 hours/month | $15/month |
-| S3 Storage | 5GB | $0.023/GB |
-| CloudFront | 50GB transfer | $0.085/GB |
-| Route 53 | $0.50/month | $0.50/month |
-| **Total** | **~$0.50/month** | **~$25-30/month** |
+| Service         | Free Tier        | After Free Tier   |
+| --------------- | ---------------- | ----------------- |
+| EC2 t2.micro    | 750 hours/month  | $8.50/month       |
+| RDS db.t2.micro | 750 hours/month  | $15/month         |
+| S3 Storage      | 5GB              | $0.023/GB         |
+| CloudFront      | 50GB transfer    | $0.085/GB         |
+| Route 53        | $0.50/month      | $0.50/month       |
+| **Total**       | **~$0.50/month** | **~$25-30/month** |
 
 <br>
 
@@ -595,6 +597,7 @@ aws cloudfront create-invalidation         # Clear cache
 ## Support
 
 For issues with AWS deployment:
+
 - AWS Documentation: https://docs.aws.amazon.com/
 - Elastic Beanstalk Guide: https://docs.aws.amazon.com/elasticbeanstalk/
 - AWS Support: https://console.aws.amazon.com/support/
