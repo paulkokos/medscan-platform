@@ -23,7 +23,7 @@ class ImageViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Use different serializer for upload"""
-        if self.action == 'create':
+        if self.action == "create":
             return ImageUploadSerializer
         return ImageSerializer
 
@@ -31,24 +31,25 @@ class ImageViewSet(viewsets.ModelViewSet):
         """Save image with current user"""
         serializer.save(user=self.request.user)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def start_analysis(self, request, pk=None):
         """Start analysis for an image"""
         image = self.get_object()
 
         if image.analyzed:
             return Response(
-                {'error': 'Image has already been analyzed'},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "Image has already been analyzed"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # TODO: Trigger ML analysis task here
         # For now, just mark as started
         from django.utils import timezone
+
         image.analysis_started_at = timezone.now()
         image.save()
 
-        return Response({
-            'message': 'Analysis started',
-            'image_id': image.id
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Analysis started", "image_id": image.id},
+            status=status.HTTP_200_OK,
+        )

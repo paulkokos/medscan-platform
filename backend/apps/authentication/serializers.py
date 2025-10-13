@@ -13,8 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'date_joined']
-        read_only_fields = ['id', 'email', 'date_joined']
+        fields = ["id", "email", "first_name", "last_name", "date_joined"]
+        read_only_fields = ["id", "email", "date_joined"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -24,21 +24,19 @@ class RegisterSerializer(serializers.ModelSerializer):
         write_only=True,
         required=True,
         validators=[validate_password],
-        style={'input_type': 'password'}
+        style={"input_type": "password"},
     )
     password2 = serializers.CharField(
-        write_only=True,
-        required=True,
-        style={'input_type': 'password'}
+        write_only=True, required=True, style={"input_type": "password"}
     )
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'password2', 'first_name', 'last_name']
+        fields = ["email", "password", "password2", "first_name", "last_name"]
 
     def validate(self, attrs):
         """Validate that passwords match"""
-        if attrs['password'] != attrs['password2']:
+        if attrs["password"] != attrs["password2"]:
             raise serializers.ValidationError(
                 {"password": "Password fields didn't match."}
             )
@@ -46,12 +44,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create and return a new user"""
-        validated_data.pop('password2')
+        validated_data.pop("password2")
         user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
+            email=validated_data["email"],
+            password=validated_data["password"],
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
         )
         return user
 
@@ -60,21 +58,15 @@ class LoginSerializer(serializers.Serializer):
     """Serializer for user login"""
 
     email = serializers.EmailField(required=True)
-    password = serializers.CharField(
-        required=True,
-        style={'input_type': 'password'}
-    )
+    password = serializers.CharField(required=True, style={"input_type": "password"})
 
 
 class ChangePasswordSerializer(serializers.Serializer):
     """Serializer for changing password"""
 
     old_password = serializers.CharField(
-        required=True,
-        style={'input_type': 'password'}
+        required=True, style={"input_type": "password"}
     )
     new_password = serializers.CharField(
-        required=True,
-        validators=[validate_password],
-        style={'input_type': 'password'}
+        required=True, validators=[validate_password], style={"input_type": "password"}
     )

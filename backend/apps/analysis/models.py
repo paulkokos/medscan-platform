@@ -9,9 +9,7 @@ class Analysis(models.Model):
     """Model for image analysis results"""
 
     image = models.OneToOneField(
-        MedicalImage,
-        on_delete=models.CASCADE,
-        related_name='analysis'
+        MedicalImage, on_delete=models.CASCADE, related_name="analysis"
     )
 
     # Analysis results
@@ -32,10 +30,10 @@ class Analysis(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'analysis_results'
-        ordering = ['-created_at']
-        verbose_name = 'Analysis'
-        verbose_name_plural = 'Analyses'
+        db_table = "analysis_results"
+        ordering = ["-created_at"]
+        verbose_name = "Analysis"
+        verbose_name_plural = "Analyses"
 
     def __str__(self):
         return f"Analysis for {self.image.title or 'Image'} (ID: {self.image.id})"

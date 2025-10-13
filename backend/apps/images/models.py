@@ -9,11 +9,9 @@ class MedicalImage(models.Model):
     """Model for medical images uploaded by users"""
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='images'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="images"
     )
-    image = models.ImageField(upload_to='medical_images/%Y/%m/%d/')
+    image = models.ImageField(upload_to="medical_images/%Y/%m/%d/")
     title = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
 
@@ -32,10 +30,10 @@ class MedicalImage(models.Model):
     file_size = models.IntegerField(null=True, blank=True)  # in bytes
 
     class Meta:
-        db_table = 'medical_images'
-        ordering = ['-uploaded_at']
-        verbose_name = 'Medical Image'
-        verbose_name_plural = 'Medical Images'
+        db_table = "medical_images"
+        ordering = ["-uploaded_at"]
+        verbose_name = "Medical Image"
+        verbose_name_plural = "Medical Images"
 
     def __str__(self):
         return f"{self.title or 'Image'} - {self.user.email}"
@@ -47,6 +45,7 @@ class MedicalImage(models.Model):
             # Extract dimensions if available
             try:
                 from PIL import Image
+
                 img = Image.open(self.image)
                 self.width, self.height = img.size
             except Exception:

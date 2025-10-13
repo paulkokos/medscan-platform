@@ -13,17 +13,19 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     # Admin
-    path('admin/', admin.site.urls),
-
+    path("admin/", admin.site.urls),
     # API Documentation
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     # API Routes
-    path('api/auth/', include('apps.authentication.urls')),
-    path('api/images/', include('apps.images.urls')),
-    path('api/analysis/', include('apps.analysis.urls')),
+    path("api/auth/", include("apps.authentication.urls")),
+    path("api/images/", include("apps.images.urls")),
+    path("api/analysis/", include("apps.analysis.urls")),
 ]
 
 # Serve media files in development
