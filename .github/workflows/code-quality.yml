@@ -34,7 +34,7 @@ jobs:
 
     - name: Run isort (import sorting check)
       working-directory: ./backend
-      run: isort --check-only --diff .
+      run: isort --check-only --diff --profile black .
 
     - name: Run Flake8 (linting)
       working-directory: ./backend
