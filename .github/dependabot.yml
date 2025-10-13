@@ -9,7 +9,7 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "YOUR_USERNAME"
+      - "paulkokos"
     labels:
       - "dependencies"
       - "frontend"
@@ -41,7 +41,7 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "YOUR_USERNAME"
+      - "paulkokos"
     labels:
       - "dependencies"
       - "backend"
