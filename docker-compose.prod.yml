@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database - Production Configuration
+  postgres:
+    image: postgres:16-alpine
+    container_name: medscan-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-medscan}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Security: No port exposure in production (internal communication only)
+    networks:
+      - medscan-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Resource limits for stability
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Django Backend - Production Configuration
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: medscan-backend-prod
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn medscan.wsgi:application
+               --bind 0.0.0.0:8000
+               --workers ${GUNICORN_WORKERS:-4}
+               --worker-class sync
+               --worker-tmp-dir /dev/shm
+               --timeout 120
+               --access-logfile -
+               --error-logfile -"
+    volumes:
+      # No bind mounts in production - use volumes only
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    # Security: Backend not directly exposed (Nginx reverse proxy only)
+    env_file:
+      - ./backend/.env.prod
+    environment:
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=medscan.settings
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-medscan}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - medscan-network
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # React Frontend - Production Configuration
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-https://api.example.com/api}
+    container_name: medscan-frontend-prod
+    restart: unless-stopped
+    # Frontend not directly exposed - Nginx serves it
+    networks:
+      - medscan-network
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-https://api.example.com/api}
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # Nginx Reverse Proxy - Production Configuration
+  nginx:
+    image: nginx:alpine
+    container_name: medscan-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+      - ./nginx/logs:/var/log/nginx
+    networks:
+      - medscan-network
+    depends_on:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+volumes:
+  postgres_data:
+    driver: local
+  static_volume:
+    driver: local
+  media_volume:
+    driver: local
+
+networks:
+  medscan-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
