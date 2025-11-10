@@ -33,7 +33,7 @@ pylint==3.0.3
 flake8==6.1.0
 
 # Security
-bandit==1.7.5
+bandit==1.8.6
 # safety==2.3.5  # Temporarily disabled due to dependency conflicts
 
 # API Documentation
