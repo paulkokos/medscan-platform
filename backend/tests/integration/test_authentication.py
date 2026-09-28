@@ -1,13 +1,14 @@
 """
 Integration tests for authentication endpoints
 """
+from unittest.mock import patch
 
 import pytest
 from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.settings import api_settings
 
 User = get_user_model()
 
@@ -149,12 +150,10 @@ class TestUserLogin:
 
     def test_login_rate_limited_after_repeated_attempts(self, api_client, user):
         """Test login is rate limited after repeated attempts"""
-        original_rates = ScopedRateThrottle.THROTTLE_RATES.copy()
-        ScopedRateThrottle.THROTTLE_RATES = {**original_rates, "auth": "2/minute"}
         url = reverse("login")
         data = {"email": user.email, "password": "TestPass123!"}
 
-        try:
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {"auth": "2/minute"}):
             first_response = api_client.post(url, data, format="json")
             second_response = api_client.post(url, data, format="json")
             throttled_response = api_client.post(url, data, format="json")
@@ -162,8 +161,6 @@ class TestUserLogin:
             assert first_response.status_code == status.HTTP_200_OK
             assert second_response.status_code == status.HTTP_200_OK
             assert throttled_response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
-        finally:
-            ScopedRateThrottle.THROTTLE_RATES = original_rates
 
 
 @pytest.mark.auth
