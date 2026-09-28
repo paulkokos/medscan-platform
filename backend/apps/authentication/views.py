@@ -144,7 +144,7 @@ class LogoutView(APIView):
 
             return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
         except Exception:
-            logger.warning("Logout token invalidation failed", exc_info=True)
+            logger.warning("Logout token invalidation failed")
             return Response(
                 {"error": "Invalid refresh token"}, status=status.HTTP_400_BAD_REQUEST
             )
