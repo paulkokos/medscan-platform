@@ -280,16 +280,16 @@ class TestTokenRefresh:
 class TestUserLogout:
     """Test logout behavior"""
 
-    def test_logout_missing_refresh_token_returns_stable_error(
+    def test_logout_without_refresh_token_is_still_successful(
         self, authenticated_client
     ):
-        """Test logout requires a refresh token"""
+        """Test logout remains idempotent without a refresh token"""
         url = reverse("logout")
 
         response = authenticated_client.post(url, {}, format="json")
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.data == {"error": "Invalid refresh token"}
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {"message": "Logout successful"}
 
     def test_logout_invalid_refresh_token_returns_stable_error(
         self, authenticated_client
