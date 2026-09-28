@@ -278,6 +278,24 @@ class TestTokenRefresh:
             assert second_response.status_code == status.HTTP_200_OK
             assert throttled_response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
 
+    @override_settings(RATE_LIMIT_ENABLED=False)
+    def test_token_refresh_succeeds_when_rate_limiting_disabled(
+        self, api_client, user
+    ):
+        """Test token refresh bypasses auth throttling when rate limiting is disabled"""
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        refresh = RefreshToken.for_user(user)
+        url = reverse("token-refresh")
+        data = {"refresh": str(refresh)}
+
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {"auth": "1/minute"}):
+            first_response = api_client.post(url, data, format="json")
+            second_response = api_client.post(url, data, format="json")
+
+        assert first_response.status_code == status.HTTP_200_OK
+        assert second_response.status_code == status.HTTP_200_OK
+
 
 @pytest.mark.auth
 @pytest.mark.integration

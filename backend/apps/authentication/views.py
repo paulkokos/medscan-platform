@@ -31,10 +31,16 @@ class AuthRateLimitMixin:
     throttle_scope = "auth"
 
     def get_throttles(self):
-        if not settings.RATE_LIMIT_ENABLED:
-            return []
+        throttles = super().get_throttles()
 
-        return [ScopedRateThrottle()]
+        if settings.RATE_LIMIT_ENABLED:
+            return throttles
+
+        return [
+            throttle
+            for throttle in throttles
+            if not isinstance(throttle, ScopedRateThrottle)
+        ]
 
 
 class RegisterView(AuthRateLimitMixin, generics.CreateAPIView):
@@ -43,6 +49,7 @@ class RegisterView(AuthRateLimitMixin, generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+    throttle_classes = (ScopedRateThrottle,)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -67,6 +74,7 @@ class LoginView(AuthRateLimitMixin, APIView):
 
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
+    throttle_classes = (ScopedRateThrottle,)
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -114,6 +122,7 @@ class ChangePasswordView(AuthRateLimitMixin, APIView):
     """Change user password"""
 
     permission_classes = (IsAuthenticated,)
+    throttle_classes = (ScopedRateThrottle,)
 
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
@@ -140,6 +149,7 @@ class LogoutView(AuthRateLimitMixin, APIView):
     """Logout user (invalidate refresh token)"""
 
     permission_classes = (IsAuthenticated,)
+    throttle_classes = (ScopedRateThrottle,)
 
     def post(self, request):
         try:
@@ -160,3 +170,4 @@ class ThrottledTokenRefreshView(AuthRateLimitMixin, TokenRefreshView):
     """Refresh JWT tokens with the auth throttle applied"""
 
     permission_classes = (AllowAny,)
+    throttle_classes = (ScopedRateThrottle,)
