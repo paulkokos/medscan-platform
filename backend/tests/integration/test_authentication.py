@@ -241,6 +241,23 @@ class TestTokenRefresh:
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
+    def test_token_refresh_rate_limited_after_repeated_requests(self, api_client, user):
+        """Test token refresh shares the stricter auth throttle"""
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        refresh = RefreshToken.for_user(user)
+        url = reverse("token-refresh")
+        data = {"refresh": str(refresh)}
+
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {"auth": "2/minute"}):
+            first_response = api_client.post(url, data, format="json")
+            second_response = api_client.post(url, data, format="json")
+            throttled_response = api_client.post(url, data, format="json")
+
+            assert first_response.status_code == status.HTTP_200_OK
+            assert second_response.status_code == status.HTTP_200_OK
+            assert throttled_response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
 
 @pytest.mark.auth
 @pytest.mark.integration

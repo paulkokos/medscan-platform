@@ -8,7 +8,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
-from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.exceptions import TokenBackendError, TokenError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -144,7 +144,7 @@ class LogoutView(APIView):
                 token.blacklist()
 
             return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
-        except TokenError:
+        except (TokenError, TokenBackendError):
             logger.warning("Logout token invalidation failed")
             return Response(
                 {"error": "Invalid refresh token"}, status=status.HTTP_400_BAD_REQUEST
