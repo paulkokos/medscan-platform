@@ -4,21 +4,25 @@ Integration tests for authentication endpoints
 from unittest.mock import patch
 
 import pytest
-from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.settings import api_settings
+from rest_framework.throttling import ScopedRateThrottle
 
 User = get_user_model()
 
 
 @pytest.fixture(autouse=True)
-def clear_throttle_cache():
-    """Clear throttling state between tests"""
-    cache.clear()
-    yield
-    cache.clear()
+def isolate_anon_throttle_ident(monkeypatch, request):
+    """Give each test a unique anonymous throttle identifier"""
+    original_get_ident = ScopedRateThrottle.get_ident
+    test_suffix = abs(hash(request.node.nodeid))
+
+    def get_ident(self, request_obj):
+        return f"{original_get_ident(self, request_obj)}:{test_suffix}"
+
+    monkeypatch.setattr(ScopedRateThrottle, "get_ident", get_ident)
 
 
 @pytest.mark.auth
