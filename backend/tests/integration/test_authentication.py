@@ -1,6 +1,7 @@
 """
 Integration tests for authentication endpoints
 """
+import hashlib
 from unittest.mock import patch
 
 import pytest
@@ -18,7 +19,7 @@ User = get_user_model()
 def isolate_anon_throttle_ident(monkeypatch, request):
     """Give each test a unique anonymous throttle identifier"""
     original_get_ident = ScopedRateThrottle.get_ident
-    test_suffix = abs(hash(request.node.nodeid))
+    test_suffix = hashlib.sha256(request.node.nodeid.encode()).hexdigest()
 
     def get_ident(self, request_obj):
         return f"{original_get_ident(self, request_obj)}:{test_suffix}"
