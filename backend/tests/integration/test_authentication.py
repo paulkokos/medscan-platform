@@ -240,3 +240,22 @@ class TestTokenRefresh:
         response = api_client.post(url, data, format="json")
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.auth
+@pytest.mark.integration
+class TestUserLogout:
+    """Test logout behavior"""
+
+    def test_logout_invalid_refresh_token_returns_stable_error(
+        self, authenticated_client
+    ):
+        """Test logout does not expose raw token errors"""
+        url = reverse("logout")
+
+        response = authenticated_client.post(
+            url, {"refresh": "invalid-token-string"}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {"error": "Invalid refresh token"}
