@@ -5,7 +5,9 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (
@@ -24,6 +26,8 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = "auth"
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -48,6 +52,8 @@ class LoginView(APIView):
 
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = "auth"
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -95,6 +101,8 @@ class ChangePasswordView(APIView):
     """Change user password"""
 
     permission_classes = (IsAuthenticated,)
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = "auth"
 
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
@@ -121,6 +129,8 @@ class LogoutView(APIView):
     """Logout user (invalidate refresh token)"""
 
     permission_classes = (IsAuthenticated,)
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = "auth"
 
     def post(self, request):
         try:
@@ -132,3 +142,11 @@ class LogoutView(APIView):
             return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ThrottledTokenRefreshView(TokenRefreshView):
+    """Refresh JWT tokens with the auth throttle applied"""
+
+    permission_classes = (AllowAny,)
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = "auth"

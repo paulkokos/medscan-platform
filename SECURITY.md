@@ -204,6 +204,7 @@ safety check
 ### Current Implementation
 
 - **JWT Authentication** - Secure token-based authentication
+- **DRF API Throttling** - Anonymous and authenticated API throttles with a stricter auth scope
 - **CORS Protection** - Configured CORS headers
 - **CSRF Protection** - Django's built-in CSRF protection
 - **SQL Injection Prevention** - ORM-based queries
@@ -211,19 +212,29 @@ safety check
 - **Password Hashing** - Django's PBKDF2 algorithm
 - **HTTPS Enforcement** - Recommended in production
 - **Input Validation** - DRF serializer validation
-- **Rate Limiting** - API rate limiting (planned)
 - **Security Headers** - Implemented via Django middleware
 
 ### Planned Security Features
 
 - [ ] Two-Factor Authentication (2FA)
-- [ ] API Rate Limiting
 - [ ] Audit Logging
 - [ ] Encryption at Rest
 - [ ] Security Headers (HSTS, CSP)
 - [ ] Automated Vulnerability Scanning
 - [ ] Penetration Testing
 - [ ] SOC 2 Compliance
+
+### 2FA Rollout Plan
+
+1. **Foundation**
+   - Add TOTP-based 2FA with recovery codes and an audited enrollment flow.
+   - Require recent password confirmation before enrolling, disabling, or regenerating recovery codes.
+2. **Limited Rollout**
+   - Enable opt-in 2FA for staff/admin accounts first, then for security-sensitive customer accounts.
+   - Add login challenge UX, trusted-device/session duration controls, and support runbooks for recovery.
+3. **Broad Availability**
+   - Roll out to all users with staged prompts, telemetry on enrollment/drop-off, and fallback recovery validation.
+   - Enforce 2FA for privileged roles after adoption targets are met and recovery flows are tested.
 
 ## Security Audit History
 
@@ -289,4 +300,4 @@ For general questions:
 
 ---
 
-Last Updated: 2025-01-15
+Last Updated: 2026-09-28
