@@ -4,6 +4,7 @@ Authentication views
 import logging
 
 from django.contrib.auth import authenticate, get_user_model
+from django.conf import settings
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -24,14 +25,24 @@ User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
-class RegisterView(generics.CreateAPIView):
+class AuthRateLimitMixin:
+    """Apply auth throttling only when rate limiting is enabled"""
+
+    throttle_scope = "auth"
+
+    def get_throttles(self):
+        if not settings.RATE_LIMIT_ENABLED:
+            return []
+
+        return [ScopedRateThrottle()]
+
+
+class RegisterView(AuthRateLimitMixin, generics.CreateAPIView):
     """User registration endpoint"""
 
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
-    throttle_classes = (ScopedRateThrottle,)
-    throttle_scope = "auth"
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -51,13 +62,11 @@ class RegisterView(generics.CreateAPIView):
         )
 
 
-class LoginView(APIView):
+class LoginView(AuthRateLimitMixin, APIView):
     """User login endpoint"""
 
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
-    throttle_classes = (ScopedRateThrottle,)
-    throttle_scope = "auth"
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -101,12 +110,10 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class ChangePasswordView(APIView):
+class ChangePasswordView(AuthRateLimitMixin, APIView):
     """Change user password"""
 
     permission_classes = (IsAuthenticated,)
-    throttle_classes = (ScopedRateThrottle,)
-    throttle_scope = "auth"
 
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
@@ -129,12 +136,10 @@ class ChangePasswordView(APIView):
         )
 
 
-class LogoutView(APIView):
+class LogoutView(AuthRateLimitMixin, APIView):
     """Logout user (invalidate refresh token)"""
 
     permission_classes = (IsAuthenticated,)
-    throttle_classes = (ScopedRateThrottle,)
-    throttle_scope = "auth"
 
     def post(self, request):
         refresh_token = request.data.get("refresh")
@@ -155,9 +160,7 @@ class LogoutView(APIView):
             )
 
 
-class ThrottledTokenRefreshView(TokenRefreshView):
+class ThrottledTokenRefreshView(AuthRateLimitMixin, TokenRefreshView):
     """Refresh JWT tokens with the auth throttle applied"""
 
     permission_classes = (AllowAny,)
-    throttle_classes = (ScopedRateThrottle,)
-    throttle_scope = "auth"

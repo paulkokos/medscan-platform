@@ -4,6 +4,7 @@ Integration tests for authentication endpoints
 from unittest.mock import patch
 
 import pytest
+from django.test import override_settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
@@ -165,6 +166,17 @@ class TestUserLogin:
             assert first_response.status_code == status.HTTP_200_OK
             assert second_response.status_code == status.HTTP_200_OK
             assert throttled_response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+    @override_settings(RATE_LIMIT_ENABLED=False)
+    def test_login_succeeds_when_rate_limiting_disabled(self, api_client, user):
+        """Test login bypasses auth throttling when rate limiting is disabled"""
+        url = reverse("login")
+        data = {"email": user.email, "password": "TestPass123!"}
+
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {}, clear=True):
+            response = api_client.post(url, data, format="json")
+
+        assert response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.auth
