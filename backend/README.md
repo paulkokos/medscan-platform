@@ -295,6 +295,12 @@ JWT_ALGORITHM=HS256
 ACCESS_TOKEN_LIFETIME_MINUTES=60
 REFRESH_TOKEN_LIFETIME_DAYS=7
 
+# API Rate Limiting
+RATE_LIMIT_ENABLED=True
+RATE_LIMIT_API_REQUESTS_PER_MINUTE=60
+RATE_LIMIT_USER_REQUESTS_PER_MINUTE=120
+RATE_LIMIT_AUTH_REQUESTS_PER_MINUTE=5
+
 # Media and Static Files
 MEDIA_ROOT=/app/media
 STATIC_ROOT=/app/staticfiles
@@ -521,6 +527,18 @@ python manage.py create_test_data
 4. Use type hints where appropriate
 5. Add docstrings to functions/classes
 6. Run linters before committing
+
+<br>
+
+---
+
+## Authentication Hardening
+
+<br>
+
+- DRF throttling is enabled by default for anonymous and authenticated API traffic.
+- Login, registration, token refresh, password change, and logout share a stricter auth throttle.
+- Tune the rate limits with `RATE_LIMIT_API_REQUESTS_PER_MINUTE`, `RATE_LIMIT_USER_REQUESTS_PER_MINUTE`, and `RATE_LIMIT_AUTH_REQUESTS_PER_MINUTE`.
 
 <br>
 

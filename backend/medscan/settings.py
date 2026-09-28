@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     # Third party apps
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "drf_spectacular",
     # Local apps
@@ -136,6 +137,33 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
     ],
 }
+
+RATE_LIMIT_ENABLED = config("RATE_LIMIT_ENABLED", default=True, cast=bool)
+RATE_LIMIT_API_REQUESTS_PER_MINUTE = config(
+    "RATE_LIMIT_API_REQUESTS_PER_MINUTE", default=60, cast=int
+)
+RATE_LIMIT_USER_REQUESTS_PER_MINUTE = config(
+    "RATE_LIMIT_USER_REQUESTS_PER_MINUTE", default=120, cast=int
+)
+RATE_LIMIT_AUTH_REQUESTS_PER_MINUTE = config(
+    "RATE_LIMIT_AUTH_REQUESTS_PER_MINUTE", default=5, cast=int
+)
+
+if RATE_LIMIT_ENABLED:
+    REST_FRAMEWORK.update(
+        {
+            "DEFAULT_THROTTLE_CLASSES": [
+                "rest_framework.throttling.AnonRateThrottle",
+                "rest_framework.throttling.UserRateThrottle",
+                "rest_framework.throttling.ScopedRateThrottle",
+            ],
+            "DEFAULT_THROTTLE_RATES": {
+                "anon": f"{RATE_LIMIT_API_REQUESTS_PER_MINUTE}/minute",
+                "user": f"{RATE_LIMIT_USER_REQUESTS_PER_MINUTE}/minute",
+                "auth": f"{RATE_LIMIT_AUTH_REQUESTS_PER_MINUTE}/minute",
+            },
+        }
+    )
 
 # JWT Settings
 SIMPLE_JWT = {

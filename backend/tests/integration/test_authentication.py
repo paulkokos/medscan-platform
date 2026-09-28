@@ -1,12 +1,31 @@
 """
 Integration tests for authentication endpoints
 """
+import hashlib
+from unittest.mock import patch
+
 import pytest
+from django.test import override_settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.throttling import ScopedRateThrottle
 
 User = get_user_model()
+
+
+@pytest.fixture(autouse=True)
+def isolate_anon_throttle_ident(monkeypatch, request):
+    """Give each test a unique anonymous throttle identifier"""
+    original_get_ident = ScopedRateThrottle.get_ident
+    test_suffix = hashlib.sha256(request.node.nodeid.encode()).hexdigest()
+
+    def get_ident(self, request_obj):
+        return f"{original_get_ident(self, request_obj)}:{test_suffix}"
+
+    monkeypatch.setattr(ScopedRateThrottle, "get_ident", get_ident)
 
 
 @pytest.mark.auth
@@ -136,6 +155,33 @@ class TestUserLogin:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+    def test_login_rate_limited_after_repeated_attempts(self, api_client, user):
+        """Test login is rate limited after repeated attempts"""
+        url = reverse("login")
+        data = {"email": user.email, "password": "TestPass123!"}
+
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {"auth": "2/minute"}):
+            first_response = api_client.post(url, data, format="json")
+            second_response = api_client.post(url, data, format="json")
+            throttled_response = api_client.post(url, data, format="json")
+
+            assert first_response.status_code == status.HTTP_200_OK
+            assert second_response.status_code == status.HTTP_200_OK
+            assert throttled_response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+    @override_settings(RATE_LIMIT_ENABLED=False)
+    def test_login_succeeds_when_rate_limiting_disabled(self, api_client, user):
+        """Test login bypasses auth throttling when rate limiting is disabled"""
+        url = reverse("login")
+        data = {"email": user.email, "password": "TestPass123!"}
+
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {"auth": "1/minute"}):
+            first_response = api_client.post(url, data, format="json")
+            second_response = api_client.post(url, data, format="json")
+
+        assert first_response.status_code == status.HTTP_200_OK
+        assert second_response.status_code == status.HTTP_200_OK
+
 
 @pytest.mark.auth
 @pytest.mark.integration
@@ -214,3 +260,80 @@ class TestTokenRefresh:
         response = api_client.post(url, data, format="json")
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_token_refresh_rate_limited_after_repeated_requests(self, api_client, user):
+        """Test token refresh shares the stricter auth throttle"""
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        refresh = RefreshToken.for_user(user)
+        url = reverse("token-refresh")
+        data = {"refresh": str(refresh)}
+
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {"auth": "2/minute"}):
+            first_response = api_client.post(url, data, format="json")
+            second_response = api_client.post(url, data, format="json")
+            throttled_response = api_client.post(url, data, format="json")
+
+            assert first_response.status_code == status.HTTP_200_OK
+            assert second_response.status_code == status.HTTP_200_OK
+            assert throttled_response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+    @override_settings(RATE_LIMIT_ENABLED=False)
+    def test_token_refresh_succeeds_when_rate_limiting_disabled(
+        self, api_client, user
+    ):
+        """Test token refresh bypasses auth throttling when rate limiting is disabled"""
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        refresh = RefreshToken.for_user(user)
+        url = reverse("token-refresh")
+        data = {"refresh": str(refresh)}
+
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {"auth": "1/minute"}):
+            first_response = api_client.post(url, data, format="json")
+            second_response = api_client.post(url, data, format="json")
+
+        assert first_response.status_code == status.HTTP_200_OK
+        assert second_response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.auth
+@pytest.mark.integration
+class TestUserLogout:
+    """Test logout behavior"""
+
+    def test_logout_valid_refresh_token_succeeds(self, authenticated_client, user):
+        """Test logout invalidates a valid refresh token"""
+        url = reverse("logout")
+        refresh = RefreshToken.for_user(user)
+
+        response = authenticated_client.post(
+            url, {"refresh": str(refresh)}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {"message": "Logout successful"}
+
+    def test_logout_without_refresh_token_is_still_successful(
+        self, authenticated_client
+    ):
+        """Test logout remains idempotent without a refresh token"""
+        url = reverse("logout")
+
+        response = authenticated_client.post(url, {}, format="json")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {"message": "Logout successful"}
+
+    def test_logout_invalid_refresh_token_returns_stable_error(
+        self, authenticated_client
+    ):
+        """Test logout does not expose raw token errors"""
+        url = reverse("logout")
+
+        response = authenticated_client.post(
+            url, {"refresh": "invalid-token-string"}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {"error": "Invalid refresh token"}
