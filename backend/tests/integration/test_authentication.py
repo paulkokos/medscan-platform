@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.throttling import ScopedRateThrottle
 
 User = get_user_model()
@@ -282,6 +283,18 @@ class TestTokenRefresh:
 @pytest.mark.integration
 class TestUserLogout:
     """Test logout behavior"""
+
+    def test_logout_valid_refresh_token_succeeds(self, authenticated_client, user):
+        """Test logout invalidates a valid refresh token"""
+        url = reverse("logout")
+        refresh = RefreshToken.for_user(user)
+
+        response = authenticated_client.post(
+            url, {"refresh": str(refresh)}, format="json"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {"message": "Logout successful"}
 
     def test_logout_without_refresh_token_is_still_successful(
         self, authenticated_client
