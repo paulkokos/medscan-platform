@@ -174,10 +174,12 @@ class TestUserLogin:
         url = reverse("login")
         data = {"email": user.email, "password": "TestPass123!"}
 
-        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {}, clear=True):
-            response = api_client.post(url, data, format="json")
+        with patch.dict(api_settings.DEFAULT_THROTTLE_RATES, {"auth": "1/minute"}):
+            first_response = api_client.post(url, data, format="json")
+            second_response = api_client.post(url, data, format="json")
 
-        assert response.status_code == status.HTTP_200_OK
+        assert first_response.status_code == status.HTTP_200_OK
+        assert second_response.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.auth
